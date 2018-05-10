@@ -1,16 +1,25 @@
-from flask import jsonify, Blueprint
+from flask import jsonify, Blueprint, request
 from app.helper import is_isbn_or_key
 from app.yushu_book import YuShuBook
+from app.web import web
+from app.forms.book import SearchForm
 
-web = Blueprint('web', __name__)
 
-@web.route('/book/search/<q>/<page>')
-def search(q, page):
+@web.route('/book/search')
+def search():
 
-    isbn_or_key = is_isbn_or_key(q)
-    if isbn_or_key == 'isbn':
-        result = YuShuBook.search_by_isbn(q)
+    form = SearchForm(request.args)
+    if form.validate():
+        q = form.q.data.strip()
+        page = form.page.data
+
+    # a = request.args.to_dict() ## 将不可变字典转换为普通字典
+        isbn_or_key = is_isbn_or_key(q)
+        if isbn_or_key == 'isbn':
+            result = YuShuBook.search_by_isbn(q)
+        else:
+            result = YuShuBook.search_by_keyword(q)
+
+        return jsonify(result)
     else:
-        result = YuShuBook.search_by_keyword(q)
-
-    return jsonify(result)
+        return jsonify(form.errors)
