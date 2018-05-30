@@ -1,6 +1,12 @@
 from flask import Flask
-from app.web.book import web
 from app.models.base import db
+from flask_login import LoginManager
+
+login_manager = LoginManager()
+
+def register_web_blueprint(app):
+    from app.web import web
+    app.register_blueprint(web)
 
 def create_app():
     app = Flask(__name__)
@@ -12,13 +18,20 @@ def create_app():
 
     app.config.from_object('app.secure')
     app.config.from_object('app.setting')
-    register_blueprint(app)
+    register_web_blueprint(app)
 
-    # db.init_app(app)
-    # with app.app_context():
-    #     db.create_all()  ## 让sqlalchemy 所有的数据模型映射到数据库离去
+
+
+    db.init_app(app)
+
+    with app.app_context():
+        db.create_all()  ## 让sqlalchemy 所有的数据模型映射到数据库离去
+
+    login_manager.init_app(app)
+    login_manager.login_view = 'web.login'
+    login_manager.login_message = '请先登录或注册'
+
+
+
     return app
 
-def register_blueprint(app):
-
-    app.register_blueprint(web)
