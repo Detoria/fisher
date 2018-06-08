@@ -18,6 +18,9 @@ class Gift(Base):
     # bid = Column(Integer, ForeignKey('book.id'))
     launched = Column(Boolean, default=False)
 
+    def is_yourself_gift(self, uid):
+        return True if self.id == uid else False
+
     @classmethod
     def get_user_gifts(cls, uid):
         gifts = Gift.query.filter_by(uid=uid, launched=False).order_by(
@@ -36,8 +39,6 @@ class Gift(Base):
 
         count_list = [{'count': w[0], 'isbn': w[1]} for w in count_list]
         return count_list
-
-
 
     @property
     def book(self):

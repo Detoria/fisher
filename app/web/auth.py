@@ -41,7 +41,6 @@ def login():
     return render_template('auth/login.html', form=form)
 
 
-
 @web.route('/reset/password', methods=['GET', 'POST'])
 def forget_password_request():
     form = EmailForm(request.form)
@@ -66,7 +65,6 @@ def forget_password(token):
         else:
             flash('密码重置失败')
     return render_template('auth/forget_password.html')
-
 
 
 @web.route('/change/password', methods=['GET', 'POST'])
